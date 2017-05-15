@@ -1,53 +1,51 @@
-#include "User.h"
-#include "Message.h"
-#include "AttachMessage.h"
-#include "MessageQueue.h"
-
-#include <iostream>
 using namespace std;
+#include "Punto.h"
+#include "Figura.h"
+#include "Circulo.h"
+#include "Poligono.h"
+#include <iostream>
 
-void printAll(Message** messages, unsigned int size) 
+void imprimirDetalleFigura(Figura &f)
 {
-	for (int i = 0; i < size; i++)
-		messages[i]->show();
+	f.imprimir();
+	// TAREA 4.2: Implementar esta funciï¿½n.
 }
 
-int main()
+float sumarPerimetros(Figura * figuras[], int numFiguras)
 {
-	MessageQueue mQueue(5);
+	// TAREA 4.3: Implementar esta funciï¿½n.
+	float suma=0;
+	for(int i=0;i<numFiguras;i++)
+		suma = suma + figuras[i]->getPerimetro(); //Pongo la flecha porque es un array de punteros
 
-	User* user1 = new User(0, "User1");
-	User* user2 = new User(1, "User2");
+	return suma;
+}
 
-	mQueue.addMessage(new Message(0, "Hello", user1->getId()));
-	mQueue.addMessage(new Message(1, "How are you?", user1->getId()));
+int main(void)
+{
+	Circulo c1("Circulo1", Punto(1,2), 3); //Circulo creado de forma estÃ¡tica
+	Circulo *c2 = new Circulo("Circulo2", Punto(2,1), 4); //Circulo creado de forma dinamica
 
-	mQueue.addMessage(new Message(2, "Fine, thank you", user2->getId()));
+	Punto vertices[] = {Punto(1,1), Punto(1,2), Punto(2,1)};
+	Poligono *p1 = new Poligono("Triangulo", 3, vertices); //Poligono creado de forma dinamica
 
-	unsigned char data[] = {0x64, 0x65, 0x66, 0x67};
-	mQueue.addMessage(new AttachMessage(3, "This is a photo", user2->getId(), data, sizeof(data)));
+	// TAREA 4.1: Imprimir por pantalla el numero de figuras creadas
+	cout<<"NUMERO DE FIGURAS = "<<Figura::getNumFiguras()<<endl;
+	// TAREA 4.2: Imprime el detalle de cada una de las figuras existentes
+	imprimirDetalleFigura(c1);
+	imprimirDetalleFigura(*c2);//Le ponemos el * para acceder al contenido (el objeto circulo) que guarda el puntero c1
+	imprimirDetalleFigura(*p1);
+	// TAREA 4.3: Imprimir por pantalla la suma de los perimetros de las 3 figuras
+	Figura * figuras[3];
+	figuras[0] = &c1;
+	figuras[1] = c2;
+	figuras[2] = p1;
+	//*<ptr> devuelve el contenido del objeto referenciado por el puntero <ptr>.
+	//El operador & se utiliza para asignar valores a datos de tipo puntero:
 
-	cout << endl;
-	cout << "Pending messages: " << mQueue.getNumMessages() << endl;
-	printAll(mQueue.getMessages(), mQueue.getNumMessages());
-
-	unsigned int numMessagesForUser1 = mQueue.getNumMessagesFor(*user1);
-	Message** messagesForUser1 = mQueue.filterMessages(*user1);
-
-	cout << endl;
-	cout << "Messages for User1: " << numMessagesForUser1 << endl;
-	printAll(messagesForUser1, numMessagesForUser1);
-
-	unsigned int numMessagesForUser2 = mQueue.getNumMessagesFor(*user2);
-	Message** messagesForUser2 = mQueue.filterMessages(*user2);
-
-	cout << endl; 
-	cout << "Messages for User2: " << numMessagesForUser2 << endl;
-	printAll(messagesForUser2, numMessagesForUser2);
-	
-	delete[] messagesForUser1;
-	delete[] messagesForUser2;
-
-	delete user1;
-	delete user2;
+	//&<id> devuelve la dirección de memoria donde comienza la variable <id>.
+	//El operador * se usa para acceder a los objetos a los que apunta un puntero:
+	float suma = sumarPerimetros(figuras,3);
+	cout<<"SUMA PERIMETROS= "<<suma<<endl;
+	return 0;
 }
